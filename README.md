@@ -5,6 +5,7 @@
 **Need Personalize_Anything release more codes, this node will coming soon..**
 
 # Example
+![](https://github.com/smthemex/ComfyUI_Personalize_Anything/blob/main/example_R.png)
 ![](https://github.com/smthemex/ComfyUI_Personalize_Anything/blob/main/example.png)
 ![](https://github.com/smthemex/ComfyUI_Personalize_Anything/blob/main/example_single.png)
 
