@@ -12,7 +12,7 @@ from .src.attn_processor import (
 from .node_utils import cf_prompt_clip,cleanup,cf_unload
 
 
-def generate_image_in_out(pipe,prompt,new_prompt, seed, timestep, tau, init_image,mask,height,width,img_dims,device,shift,inpainting_mode,cf_clip=None):
+def generate_image_out(pipe,prompt,new_prompt, seed, timestep, tau, init_image,mask,height,width,img_dims,device,shift,cf_clip=None):
     shift_mask = shift_tensor(mask, shift) 
     generator = torch.Generator(device=device).manual_seed(seed)
 
@@ -28,140 +28,163 @@ def generate_image_in_out(pipe,prompt,new_prompt, seed, timestep, tau, init_imag
         cf_clip=None
         cf_unload()
         cleanup()
-        if inpainting_mode:
-            inverted_latents, image_latents, latent_image_ids = pipe.invert(
-                source_prompt="",
-                image=init_image,
-                height=height,
-                width=width,
-                num_inversion_steps=timestep,
-                gamma=1.0,
-                prompt_embeds= inv_prompt_embeds,
-                pooled_prompt_embeds= inv_pooled_prompt_embeds,
-                text_ids= inv_text_ids,
+        
+        set_flux_transformer_attn_processor(pipe.transformer, set_attn_proc_func=lambda name, dh, nh, ap:FluxAttnProcessor2_0())
+        inverted_latents, image_latents, latent_image_ids = pipe.invert( 
+            source_prompt="", 
+            image=init_image, 
+            height=height,
+            width=width,
+            num_inversion_steps=timestep, 
+            gamma=1.0,
+            prompt_embeds= inv_prompt_embeds,
+            pooled_prompt_embeds= inv_pooled_prompt_embeds,
+            text_ids= inv_text_ids,
             )
 
-            set_flux_transformer_attn_processor(
-            pipe.transformer,
-            set_attn_proc_func=lambda name, dh, nh, ap: PersonalizeAnythingAttnProcessor(
-                name=name, tau=tau/100, mask=mask, shift_mask=shift_mask, device=device, img_dims=img_dims,token_len=inf_prompt_embeds_.shape[1]),
-            )
-
-            image = pipe(
-                None,
-                inverted_latents=inverted_latents,
-                image_latents=image_latents,
-                latent_image_ids=latent_image_ids,
-                height=height,
-                width=width,
-                start_timestep=0.0,
-                stop_timestep=0.99,
-                num_inference_steps=timestep,
-                eta=1.0,
-                generator=generator,
-                prompt_embeds= pipe_prompt_embeds,
-                pooled_prompt_embeds= pipe_pooled_prompt_embeds,
-                text_ids= inv_text_ids,
-            ).images[-1]
-        else:
-            set_flux_transformer_attn_processor(pipe.transformer, set_attn_proc_func=lambda name, dh, nh, ap:FluxAttnProcessor2_0())
-            inverted_latents, image_latents, latent_image_ids = pipe.invert( 
-                source_prompt="", 
-                image=init_image, 
-                height=height,
-                width=width,
-                num_inversion_steps=timestep, 
-                gamma=1.0,
-                prompt_embeds= inv_prompt_embeds,
-                pooled_prompt_embeds= inv_pooled_prompt_embeds,
-                text_ids= inv_text_ids,
-                )
-
-            set_flux_transformer_attn_processor(
-                pipe.transformer,
-                set_attn_proc_func=lambda name, dh, nh, ap: PersonalizeAnythingAttnProcessor(
-                    name=name, tau=tau/100, mask=mask, shift_mask=shift_mask, device=device, img_dims=img_dims),
-            )
-
-            image = pipe(
-                None, 
-                inverted_latents=inverted_latents,
-                image_latents=image_latents,
-                latent_image_ids=latent_image_ids,
-                height = height,
-                width = width,
-                start_timestep=0.0, 
-                stop_timestep=0.99,
-                num_inference_steps=timestep,
-                eta=1.0, 
-                generator=generator,
-                prompt_embeds= inv_prompt_embeds,
-                pooled_prompt_embeds= inv_pooled_prompt_embeds,
-                text_ids= inv_text_ids,
-            ).images[1]
-
-    else:
-        if inpainting_mode:
-            inverted_latents, image_latents, latent_image_ids = pipe.invert(
-                source_prompt="",
-                image=init_image,
-                height=height,
-                width=width,
-                num_inversion_steps=timestep,
-                gamma=1.0,
-
-            )
-
-            set_flux_transformer_attn_processor(
+        set_flux_transformer_attn_processor(
             pipe.transformer,
             set_attn_proc_func=lambda name, dh, nh, ap: PersonalizeAnythingAttnProcessor(
                 name=name, tau=tau/100, mask=mask, shift_mask=shift_mask, device=device, img_dims=img_dims),
-            )
+        )
 
-            image = pipe(
-                ["", prompt],
-                inverted_latents=inverted_latents,
-                image_latents=image_latents,
-                latent_image_ids=latent_image_ids,
-                height=height,
-                width=width,
-                start_timestep=0.0,
-                stop_timestep=0.99,
-                num_inference_steps=timestep,
-                eta=1.0,
-                generator=generator,
-            ).images[-1]
-        else:
-            set_flux_transformer_attn_processor(pipe.transformer, set_attn_proc_func=lambda name, dh, nh, ap:FluxAttnProcessor2_0())
-            inverted_latents, image_latents, latent_image_ids = pipe.invert( 
-                source_prompt="", 
-                image=init_image, 
-                height=height,
-                width=width,
-                num_inversion_steps=timestep, 
-                gamma=1.0)
+        image = pipe(
+            None, 
+            inverted_latents=inverted_latents,
+            image_latents=image_latents,
+            latent_image_ids=latent_image_ids,
+            height = height,
+            width = width,
+            start_timestep=0.0, 
+            stop_timestep=0.99,
+            num_inference_steps=timestep,
+            eta=1.0, 
+            generator=generator,
+            prompt_embeds= pipe_prompt_embeds,
+            pooled_prompt_embeds= pipe_pooled_prompt_embeds,
+            text_ids= inv_text_ids,
+        ).images[1]
 
-            set_flux_transformer_attn_processor(
-                pipe.transformer,
-                set_attn_proc_func=lambda name, dh, nh, ap: PersonalizeAnythingAttnProcessor(
-                    name=name, tau=tau/100, mask=mask, shift_mask=shift_mask, device=device, img_dims=img_dims),
-            )
+    else:
+        set_flux_transformer_attn_processor(pipe.transformer, set_attn_proc_func=lambda name, dh, nh, ap:FluxAttnProcessor2_0())
+        inverted_latents, image_latents, latent_image_ids = pipe.invert( 
+            source_prompt="", 
+            image=init_image, 
+            height=height,
+            width=width,
+            num_inversion_steps=timestep, 
+            gamma=1.0)
 
-            image = pipe(
-                [prompt, new_prompt], 
-                inverted_latents=inverted_latents,
-                image_latents=image_latents,
-                latent_image_ids=latent_image_ids,
-                height = height,
-                width = width,
-                start_timestep=0.0, 
-                stop_timestep=0.99,
-                num_inference_steps=timestep,
-                eta=1.0, 
-                generator=generator,
-            ).images[1]
+        set_flux_transformer_attn_processor(
+            pipe.transformer,
+            set_attn_proc_func=lambda name, dh, nh, ap: PersonalizeAnythingAttnProcessor(
+                name=name, tau=tau/100, mask=mask, shift_mask=shift_mask, device=device, img_dims=img_dims),
+        )
+
+        image = pipe(
+            [prompt, new_prompt], 
+            inverted_latents=inverted_latents,
+            image_latents=image_latents,
+            latent_image_ids=latent_image_ids,
+            height = height,
+            width = width,
+            start_timestep=0.0, 
+            stop_timestep=0.99,
+            num_inference_steps=timestep,
+            eta=1.0, 
+            generator=generator,
+        ).images[1]
 
     return image
+
+def generate_image_in(pipe,prompt,new_prompt, seed, timestep, tau, init_image,mask,height,width,img_dims,device,shift,cf_clip=None):
+    shift_mask = shift_tensor(mask, shift) 
+    generator = torch.Generator(device=device).manual_seed(seed)
+
+    if cf_clip is not None:
+ 
+        inv_prompt_embeds,inv_pooled_prompt_embeds,inv_text_ids=cf_prompt_clip(cf_clip,"")
+        inf_prompt_embeds_,inf_pooled_prompt_embeds_,_= cf_prompt_clip(cf_clip,prompt)
+        new_prompt_embeds,new_pooled_prompt_embeds,_=cf_prompt_clip(cf_clip,new_prompt)
+
+        pipe_prompt_embeds=torch.cat([inf_prompt_embeds_,new_prompt_embeds],dim=0)# batch size 2
+        pipe_pooled_prompt_embeds=torch.cat([inf_pooled_prompt_embeds_,new_pooled_prompt_embeds],dim=0)
+       
+        cf_clip=None
+        cf_unload()
+        cleanup()
+        
+        inverted_latents, image_latents, latent_image_ids = pipe.invert(
+            source_prompt="",
+            image=init_image,
+            height=height,
+            width=width,
+            num_inversion_steps=timestep,
+            gamma=1.0,
+            prompt_embeds= inv_prompt_embeds,
+            pooled_prompt_embeds= inv_pooled_prompt_embeds,
+            text_ids= inv_text_ids,
+        )
+
+        set_flux_transformer_attn_processor(
+        pipe.transformer,
+        set_attn_proc_func=lambda name, dh, nh, ap: PersonalizeAnythingAttnProcessor(
+            name=name, tau=tau/100, mask=mask, shift_mask=shift_mask, device=device, img_dims=img_dims,token_len=inf_prompt_embeds_.shape[1]),
+        )
+
+        image = pipe(
+            None,
+            inverted_latents=inverted_latents,
+            image_latents=image_latents,
+            latent_image_ids=latent_image_ids,
+            height=height,
+            width=width,
+            start_timestep=0.0,
+            stop_timestep=0.99,
+            num_inference_steps=timestep,
+            eta=1.0,
+            generator=generator,
+            prompt_embeds= pipe_prompt_embeds,
+            pooled_prompt_embeds= pipe_pooled_prompt_embeds,
+            text_ids= inv_text_ids,
+        ).images[1]
+    
+    else:
+        
+        inverted_latents, image_latents, latent_image_ids = pipe.invert(
+            source_prompt="",
+            image=init_image,
+            height=height,
+            width=width,
+            num_inversion_steps=timestep,
+            gamma=1.0,
+
+        )
+
+        set_flux_transformer_attn_processor(
+        pipe.transformer,
+        set_attn_proc_func=lambda name, dh, nh, ap: PersonalizeAnythingAttnProcessor(
+            name=name, tau=tau/100, mask=mask, shift_mask=shift_mask, device=device, img_dims=img_dims),
+        )
+
+        image = pipe(
+            ["", prompt],
+            inverted_latents=inverted_latents,
+            image_latents=image_latents,
+            latent_image_ids=latent_image_ids,
+            height=height,
+            width=width,
+            start_timestep=0.0,
+            stop_timestep=0.99,
+            num_inference_steps=timestep,
+            eta=1.0,
+            generator=generator,
+        ).images[1]
+        
+
+    return image
+
+
 
 
 def generate_image_personalize_single(pipe,prompt,personalize_prompt, seed, timestep, tau, init_image,mask,height,width,img_dims,device,shift,cf_clip=None):
