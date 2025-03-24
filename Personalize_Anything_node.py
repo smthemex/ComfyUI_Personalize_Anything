@@ -12,7 +12,7 @@ from .scripts.grounding_sam import *
 from .node_utils import cleanup,pil2narry,process_image_with_mask,tensor2pil_upscale
 from .src.pipeline import RFInversionParallelFluxPipeline
 from .src.pipeline_wrapper import RFInversionParallelFluxPipeline as RFInversionParallelFluxPipeline_Wrapper
-from .gradio_demo import generate_image_in_out,generate_image_personalize_single,generate_image_reconstruction,generate_image_Composition
+from .gradio_demo import generate_image_out,generate_image_in,generate_image_personalize_single,generate_image_reconstruction,generate_image_Composition
 
 import folder_paths
 
@@ -219,9 +219,9 @@ class Personalize_Anything_Sampler:
         # inverse
   
         if infer_mode=="inpainting":
-            img=generate_image_in_out(model,prompt,personalize_prompt, seed, timestep, tau,init_image,mask,height,width,img_dims,device,shift,True,cf_clip)
+            img=generate_image_in(model,prompt,personalize_prompt, seed, timestep, tau,init_image,mask,height,width,img_dims,device,shift,cf_clip)
         elif infer_mode=="outpainting":
-            img=generate_image_in_out(model,prompt,personalize_prompt, seed, timestep, tau,init_image,mask,height,width,img_dims,device,shift,False,cf_clip)
+            img=generate_image_out(model,prompt,personalize_prompt, seed, timestep, tau,init_image,mask,height,width,img_dims,device,shift,cf_clip)
         elif infer_mode=="single_personalize":
             img=generate_image_personalize_single(model,prompt,personalize_prompt, seed, timestep, tau, init_image,mask,height,width,img_dims,device,shift,cf_clip)
         elif infer_mode=="multi_personalize":
