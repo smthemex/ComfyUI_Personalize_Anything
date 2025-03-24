@@ -1,0 +1,9 @@
+accelerate
+diffusers>=0.32.2
+#ipykernel
+#gradio
+#matplotlib
+opencv-python
+protobuf
+sentencepiece
+transformers>=4.49.0
