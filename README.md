@@ -2,7 +2,7 @@
 [Personalize Anything](https://github.com/fenghora/personalize-anything) for Free with Diffusion Transformer,use it in comfyUI with wrapper mode
 
 # Update
-* scene_composition has bug now，scene_composition 目前有bug 没用效果
+* scene_composition has bug now，scene_composition 目前有bug 没效果
 
 # 1. Installation
 
@@ -39,10 +39,15 @@ if OOM chocie nf4 or fp8 type 如果OOM，开启nf4或者fp8量化
 
 
 # 4.Example
-![](https://github.com/smthemex/ComfyUI_Personalize_Anything/blob/main/assets/example_O.png)
-![](https://github.com/smthemex/ComfyUI_Personalize_Anything/blob/main/assets/example_R.png)
-![](https://github.com/smthemex/ComfyUI_Personalize_Anything/blob/main/assets/example.png)
-![](https://github.com/smthemex/ComfyUI_Personalize_Anything/blob/main/assets/example_single.png)
+* Inpainting
+![](https://github.com/smthemex/ComfyUI_Personalize_Anything/blob/main/assets/inpainting.png)
+* Outpainting
+![](https://github.com/smthemex/ComfyUI_Personalize_Anything/blob/main/assets/outpainting.png)
+* Reconstruction
+![](https://github.com/smthemex/ComfyUI_Personalize_Anything/blob/main/assets/reconstruction.png)
+* Single_personalize
+![](https://github.com/smthemex/ComfyUI_Personalize_Anything/blob/main/assets/single_personalize.png)
+* comfy single model
 ![](https://github.com/smthemex/ComfyUI_Personalize_Anything/blob/main/assets/example_cf.png)
 
 # 5.Tips
