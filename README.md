@@ -2,7 +2,7 @@
 [Personalize Anything](https://github.com/fenghora/personalize-anything) for Free with Diffusion Transformer,use it in comfyUI with wrapper mode
 
 # Update
-* scene_composition has bug now，scene_composition 目前有bug 没效果
+* fix inpainting bug, inpainting only use prompt line one /修复内绘的bug，注意内绘只用第一行的prompt
 
 # 1. Installation
 
@@ -39,8 +39,8 @@ if OOM chocie nf4 or fp8 type 如果OOM，开启nf4或者fp8量化
 
 
 # 4.Example
-* Inpainting
-![](https://github.com/smthemex/ComfyUI_Personalize_Anything/blob/main/assets/inpainting.png)
+* Inpainting , use up prompt only
+![](https://github.com/smthemex/ComfyUI_Personalize_Anything/blob/main/assets/in.png)
 * Outpainting
 ![](https://github.com/smthemex/ComfyUI_Personalize_Anything/blob/main/assets/outpainting.png)
 * Reconstruction
