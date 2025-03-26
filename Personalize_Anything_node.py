@@ -219,7 +219,7 @@ class Personalize_Anything_Sampler:
         # inverse
   
         if infer_mode=="inpainting":
-            img=generate_image_in(model,prompt,personalize_prompt, seed, timestep, tau,init_image,mask,height,width,img_dims,device,shift,cf_clip)
+            img=generate_image_in(model,prompt, seed, timestep, tau, init_image,mask,height,width,img_dims,device,shift,cf_clip)
         elif infer_mode=="outpainting":
             img=generate_image_out(model,prompt,personalize_prompt, seed, timestep, tau,init_image,mask,height,width,img_dims,device,shift,cf_clip)
         elif infer_mode=="single_personalize":
