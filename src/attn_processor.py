@@ -68,7 +68,8 @@ class PersonalizeAnythingAttnProcessor:
         ###################################################################################
         if timestep is not None:
             timestep = timestep
-            
+        else: #timestep is None
+            timestep = 0.0
         concept_process = self.concept_process # token concatenation
         c_q = concept_process and True # if token concatenation is applied to q
         c_kv = concept_process and True  # if token concatenation is applied to kv
