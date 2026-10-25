@@ -1,9 +1,5 @@
-accelerate
-diffusers>=0.32.2
-#ipykernel
-#gradio
-#matplotlib
-opencv-python
-protobuf
-sentencepiece
-transformers>=4.49.0
+# Personalize Anything - native comfy port.
+# No diffusers / transformers / peft / accelerate / opencv needed any more:
+# the plugin runs on comfy's own FLUX DiT, CLIP and VAE implementations.
+# (The legacy diffusers wrapper is still in the folder for archaeology only.)
+torch

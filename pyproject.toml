@@ -1,9 +1,9 @@
 [project]
 name = "personalize_anything"
 description = "Personalize Anything for Free with Diffusion Transformer,use it in comfyUI with wrapper mode"
-version = "1.0.0"
+version = "2.0.0"
 license = {file = "LICENSE"}
-dependencies = ["accelerate", "diffusers>=0.32.2", "#ipykernel", "#gradio", "#matplotlib", "opencv-python", "protobuf", "sentencepiece", "transformers>=4.49.0"]
+dependencies = ["torch"]
 
 [project.urls]
 Repository = "https://github.com/smthemex/ComfyUI_Personalize_Anything"
